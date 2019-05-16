@@ -47,6 +47,8 @@ Description:
 #ifndef UNIFACE_H_
 #define UNIFACE_H_
 
+#define BOOST_BIND_NO_PLACEHOLDERS
+
 #include "util.h"
 #include "comm.h"
 #include "comm_factory.h"
