@@ -78,7 +78,8 @@ public:
 		return value;
 	}
 	inline geometry::any_shape<CONFIG> support( point_type focus, REAL domain_mag ) const {
-		return geometry::point<CONFIG>( focus );
+		//return geometry::point<CONFIG>( focus );
+                return geometry::sphere<CONFIG>( focus, 1.e-2 );
 	}
 };
 
