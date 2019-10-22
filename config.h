@@ -68,7 +68,7 @@ struct crunch {
 	static const bool DEBUG = false;
 	using EXCEPTION = exception_segv;
 
-	static const bool FIXEDPOINTS = false;
+	static const bool FIXEDPOINTS = true;
 };
 
 // backward-compatibility
