@@ -103,6 +103,7 @@ namespace mui {
 		DECLARE_SAMPLER_1ARG(sampler_moving_average,SUFFIX,config_##SUFFIX)\
 		DECLARE_SAMPLER_1ARG(sampler_exact,SUFFIX,config_##SUFFIX)\
 		DECLARE_SAMPLER_1ARG(sampler_gauss,SUFFIX,config_##SUFFIX)\
+	        DECLARE_SAMPLER_1ARG(sampler_shepard_quintic,SUFFIX,config_##SUFFIX)\
 		DECLARE_SAMPLER_0ARG(chrono_sampler_exact,SUFFIX,config_##SUFFIX);\
 		DECLARE_SAMPLER_0ARG(chrono_sampler_gauss,SUFFIX,config_##SUFFIX);\
 		DECLARE_SAMPLER_0ARG(chrono_sampler_sum,SUFFIX,config_##SUFFIX);\
@@ -158,6 +159,7 @@ struct config_custom {
 		DECLARE_SAMPLER_1ARG(sampler_moving_average,SUFFIX,CONFIG)\
 		DECLARE_SAMPLER_1ARG(sampler_exact,SUFFIX,CONFIG)\
 		DECLARE_SAMPLER_1ARG(sampler_gauss,SUFFIX,CONFIG)\
+                DECLARE_SAMPLER_1ARG(sampler_shepard_quintic,SUFFIX,CONFIG)\
 		DECLARE_SAMPLER_0ARG(chrono_sampler_exact,SUFFIX,CONFIG);\
 		DECLARE_SAMPLER_0ARG(chrono_sampler_gauss,SUFFIX,CONFIG);\
 		DECLARE_SAMPLER_0ARG(chrono_sampler_sum,SUFFIX,CONFIG);\
