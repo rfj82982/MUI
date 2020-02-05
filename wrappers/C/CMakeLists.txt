@@ -20,8 +20,10 @@ endif()
 
 file(GLOB source3d  ${CMAKE_CURRENT_SOURCE_DIR}/mui_3d.cpp)
 file(GLOB source2d  ${CMAKE_CURRENT_SOURCE_DIR}/mui_2d.cpp)
+file(GLOB source1d  ${CMAKE_CURRENT_SOURCE_DIR}/mui_1d.cpp)
 
 add_library(muiwrapper3d_c STATIC ${source3d})
 add_library(muiwrapper2d_c STATIC ${source2d})
+add_library(muiwrapper1d_c STATIC ${source1d})
 
 
