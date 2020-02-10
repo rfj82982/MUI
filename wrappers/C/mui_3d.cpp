@@ -1,48 +1,50 @@
-/*
-Multiscale Universal Interface Code Coupling Library
+/*****************************************************************************
+* Multiscale Universal Interface Code Coupling Library Demo 6                *
+*                                                                            *
+* Copyright (C) 2017 Y. H. Tang, S. Kudo, X. Bian, Z. Li, G. E. Karniadakis  *
+* Copyright (C) 2019 S. Rolfo (*STFC Daresbury laboratory)                   *
+*                                                                            *
+* This software is jointly licensed under the Apache License, Version 2.0    *
+* and the GNU General Public License version 3, you may use it according     *
+* to either.                                                                 *
+*                                                                            *
+* ** Apache License, version 2.0 **                                          *
+*                                                                            *
+* Licensed under the Apache License, Version 2.0 (the "License");            *
+* you may not use this file except in compliance with the License.           *
+* You may obtain a copy of the License at                                    *
+*                                                                            *
+* http://www.apache.org/licenses/LICENSE-2.0                                 *
+*                                                                            *
+* Unless required by applicable law or agreed to in writing, software        *
+* distributed under the License is distributed on an "AS IS" BASIS,          *
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.   *
+* See the License for the specific language governing permissions and        *
+* limitations under the License.                                             *
+*                                                                            *
+* ** GNU General Public License, version 3 **                                *
+*                                                                            *
+* This program is free software: you can redistribute it and/or modify       *
+* it under the terms of the GNU General Public License as published by       *
+* the Free Software Foundation, either version 3 of the License, or          *
+* (at your option) any later version.                                        *
+*                                                                            *
+* This program is distributed in the hope that it will be useful,            *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of             *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+* GNU General Public License for more details.                               *
+*                                                                            *
+* You should have received a copy of the GNU General Public License          *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.      *
+******************************************************************************/
 
-Copyright (C) 2017 Y. H. Tang, S. Kudo, X. Bian, Z. Li, G. E. Karniadakis
-
-This software is jointly licensed under the Apache License, Version 2.0
-and the GNU General Public License version 3, you may use it according
-to either.
-
-** Apache License, version 2.0 **
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-** GNU General Public License, version 3 **
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-** File Details **
-
-Filename: mui_3d.cpp
-Created: Jan 20, 2015
-Author: Y. H. Tang
-Description: C wrapper to create 3D MUI uniface.
-*/
+/**
+ * @file mui_3d.cpp
+ * @author Y. H. Tang
+ * @date Jan 20, 2015
+ * @brief C++ C wrapper to create 3D MUI uniface.
+ *
+ */
 
 #include "../../mui.h"
 
@@ -59,6 +61,7 @@ typedef sampler_exact3d<double>            mui_sampler_exact3d;
 typedef sampler_nearest_neighbor3d<double> mui_sampler_nearest3d;
 typedef sampler_pseudo_nearest_neighbor3d<double> mui_sampler_pseudo_nearest_neighbor3d;
 typedef sampler_pseudo_nearest2_linear3d<double> mui_sampler_pseudo_nearest2_linear3d;
+typedef geometry::box3d mui_geometry_box3d;
 
 // allocator
 mui_uniface3d* mui_create_uniface3d( const char *URI ) {
@@ -97,6 +100,10 @@ mui_chrono_sampler_mean3d* mui_create_chrono_sampler_mean3d( double past, double
 	return new mui_chrono_sampler_mean3d( past, future );
 }
 
+mui_geometry_box3d* mui_create_geometry_box3d(double l1_x, double l1_y, double l1_z, double l2_x, double l2_y, double l2_z){
+	return new mui_geometry_box3d(point3d(l1_x,l1_y,l1_z),point3d(l2_x,l2_y,l2_z));
+}
+
 // deallocator
 void mui_destroy_uniface3d( mui_uniface3d *uniface ) {
 	delete uniface;
@@ -128,6 +135,11 @@ void mui_destroy_chrono_sampler_exact3d( mui_chrono_sampler_exact3d* sampler ) {
 void mui_destroy_chrono_sampler_mean3d( mui_chrono_sampler_mean3d* sampler ) {
 	delete sampler;
 }
+
+void mui_destroy_geometry_box3d( mui_geometry_box3d* box3d){
+	delete box3d;
+}
+
 
 // push
 void mui_push( mui_uniface3d* uniface, const char *attr, double x, double y, double z, double value ) {
@@ -181,6 +193,14 @@ double mui_fetch_moving_average_mean( mui_uniface3d* uniface, const char *attr, 
 	return uniface->fetch( std::string(attr), point3d(x,y,z), t, *spatial, *temporal );
 }
 
+void mui_announce_send_span(mui_uniface3d* uniface, double t0, double tfin, mui_geometry_box3d *box3d){
+	uniface->announce_send_span( t0, tfin , *box3d );
+}
+
+void mui_announce_recv_span(mui_uniface3d* uniface, double t0, double tfin, mui_geometry_box3d *box3d){
+	uniface->announce_recv_span( t0, tfin , *box3d );
+}
+
 // commit all data in buffer
 void mui_commit( mui_uniface3d* uniface, double t ) {
 	uniface->commit( t );
@@ -199,6 +219,26 @@ void mui_forget( mui_uniface3d* uniface, double first, double last ) {
 // set automatic deletion
 void mui_set_memory( mui_uniface3d* uniface, double length ) {
 	return uniface->set_memory( length );
+}
+
+// send a double
+void mui_send_double( mui_uniface3d* uniface, const char *attr, double value ) {
+        uniface->push( std::string(attr), value );
+}
+
+// fetch a double
+double mui_fetch_double( mui_uniface3d* uniface, const char *attr ) {
+        return uniface->fetch<double>( std::string(attr) );
+}
+
+// assign int
+void mui_send_int( mui_uniface3d* uniface, const char *attr, int value ) {
+        uniface->push( std::string(attr), value );
+}
+
+// fetch assigned
+int mui_fetch_int( mui_uniface3d* uniface, const char *attr ) {
+        return uniface->fetch<int>( std::string(attr) );
 }
 
 // split comm

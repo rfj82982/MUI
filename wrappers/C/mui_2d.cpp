@@ -61,6 +61,7 @@ typedef sampler_exact2d<double>            mui_sampler_exact2d;
 typedef sampler_nearest_neighbor2d<double> mui_sampler_nearest2d;
 typedef sampler_pseudo_nearest_neighbor2d<double> mui_sampler_pseudo_nearest_neighbor2d;
 typedef sampler_pseudo_nearest2_linear2d<double> mui_sampler_pseudo_nearest2_linear2d;
+typedef geometry::box2d mui_geometry_box2d;
 
 // allocator
 mui_uniface2d* mui_create_uniface2d( const char *URI ) {
@@ -99,6 +100,10 @@ mui_chrono_sampler_mean2d* mui_create_chrono_sampler_mean2d( double past, double
 	return new mui_chrono_sampler_mean2d( past, future );
 }
 
+mui_geometry_box2d* mui_create_geometry_box2d(double l1_x, double l1_y, double l2_x, double l2_y){
+	return new mui_geometry_box2d(point2d(l1_x,l1_y),point2d(l2_x,l2_y));
+}
+
 // deallocator
 void mui_destroy_uniface2d( mui_uniface2d *uniface ) {
 	delete uniface;
@@ -130,6 +135,11 @@ void mui_destroy_chrono_sampler_exact2d( mui_chrono_sampler_exact2d* sampler ) {
 void mui_destroy_chrono_sampler_mean2d( mui_chrono_sampler_mean2d* sampler ) {
 	delete sampler;
 }
+
+void mui_destroy_geometry_box2d( mui_geometry_box2d* box2d){
+	delete box2d;
+}
+
 
 // push
 void mui_push( mui_uniface2d* uniface, const char *attr, double x, double y , double value ) {
@@ -183,6 +193,14 @@ double mui_fetch_moving_average_mean( mui_uniface2d* uniface, const char *attr, 
 	return uniface->fetch( std::string(attr), point2d(x,y), t, *spatial, *temporal );
 }
 
+void mui_announce_send_span(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d){
+	uniface->announce_send_span( t0, tfin , *box2d );
+}
+
+void mui_announce_recv_span(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d){
+	uniface->announce_recv_span( t0, tfin , *box2d );
+}
+
 // commit all data in buffer
 void mui_commit( mui_uniface2d* uniface, double t ) {
 	uniface->commit( t );
@@ -201,6 +219,26 @@ void mui_forget( mui_uniface2d* uniface, double first, double last ) {
 // set automatic deletion
 void mui_set_memory( mui_uniface2d* uniface, double length ) {
 	return uniface->set_memory( length );
+}
+
+// send a double
+void mui_send_double( mui_uniface2d* uniface, const char *attr, double value ) {
+        uniface->push( std::string(attr), value );
+}
+
+// fetch a double
+double mui_fetch_double( mui_uniface2d* uniface, const char *attr ) {
+        return uniface->fetch<double>( std::string(attr) );
+}
+
+// assign int
+void mui_send_int( mui_uniface2d* uniface, const char *attr, int value ) {
+        uniface->push( std::string(attr), value );
+}
+
+// fetch assigned
+int mui_fetch_int( mui_uniface2d* uniface, const char *attr ) {
+        return uniface->fetch<int>( std::string(attr) );
 }
 
 // split comm

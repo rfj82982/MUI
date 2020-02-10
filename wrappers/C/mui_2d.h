@@ -51,20 +51,22 @@
 
 #include "mpi.h"
 
-typedef struct mui_uniface2d                mui_uniface2d;
-typedef struct mui_sampler_gauss2d          mui_sampler_gauss2d;
-typedef struct mui_sampler_moving_average2d mui_sampler_moving_average2d;
-typedef struct mui_chrono_sampler_exact2d   mui_chrono_sampler_exact2d;
-typedef struct mui_chrono_sampler_mean2d    mui_chrono_sampler_mean2d;
-typedef struct mui_sampler_exact2d          mui_sampler_exact2d;
-typedef struct mui_sampler_nearest2d        mui_sampler_nearest2d;
-typedef struct mui_sampler_pseudo_nearest_neighbor2d        mui_sampler_pseudo_nearest_neighbor2d;
-typedef struct mui_sampler_pseudo_nearest2_linear2d        mui_sampler_pseudo_nearest2_linear2d;
+typedef struct mui_uniface2d                          mui_uniface2d;
+typedef struct mui_sampler_gauss2d                    mui_sampler_gauss2d;
+typedef struct mui_sampler_moving_average2d           mui_sampler_moving_average2d;
+typedef struct mui_chrono_sampler_exact2d             mui_chrono_sampler_exact2d;
+typedef struct mui_chrono_sampler_mean2d              mui_chrono_sampler_mean2d;
+typedef struct mui_sampler_exact2d                    mui_sampler_exact2d;
+typedef struct mui_sampler_nearest2d                  mui_sampler_nearest2d;
+typedef struct mui_sampler_pseudo_nearest_neighbor2d  mui_sampler_pseudo_nearest_neighbor2d;
+typedef struct mui_sampler_pseudo_nearest2_linear2d   mui_sampler_pseudo_nearest2_linear2d;
+typedef struct mui_geometry_box2d                     mui_geometry_box2d;
+
 
 /* allocator */
 mui_uniface2d* mui_create_uniface2d( const char *URI );
 mui_sampler_gauss2d* mui_create_sampler_2d( double r, double h );
-mui_sampler_moving_average2d* mui_create_sampler_moving_average2d( double dx, double dy, double dz );
+mui_sampler_moving_average2d* mui_create_sampler_moving_average2d( double dx, double dy );
 mui_sampler_exact2d* mui_create_sampler_exact2d();
 mui_sampler_nearest2d* mui_create_sampler_nearest2d();
 mui_sampler_pseudo_nearest_neighbor2d* mui_create_sampler_pseudo_nearest_neighbor2d();
@@ -72,6 +74,8 @@ mui_sampler_pseudo_nearest2_linear2d* mui_create_sampler_pseudo_nearest2_linear2
 
 mui_chrono_sampler_exact2d* mui_create_chrono_sampler_exact2d();
 mui_chrono_sampler_mean2d* mui_create_chrono_sampler_mean2d( double past, double future );
+
+mui_geometry_box2d* mui_create_geometry_box2d(double l1_x, double l1_y, double l2_x, double l2_y);
 
 /* deallocator */
 void mui_destroy_uniface2d( mui_uniface2d *uniface );
@@ -84,6 +88,8 @@ void mui_destroy_sampler_nearest2_linear2d( mui_sampler_pseudo_nearest2_linear2d
 
 void mui_destroy_chrono_sampler_exact2d( mui_chrono_sampler_exact2d* sampler );
 void mui_destroy_chrono_sampler_mean2d( mui_chrono_sampler_mean2d* sampler );
+
+void mui_destroy_geometry_box2d( mui_geometry_box2d* box2d);
 
 /* push */
 void mui_push( mui_uniface2d* uniface, const char *attr, double x, double y, double t );
@@ -123,6 +129,13 @@ double mui_fetch_moving_average_exact( mui_uniface2d* uniface, const char *attr,
 /*  temporal sampler: mean */
 double mui_fetch_moving_average_mean( mui_uniface2d* uniface, const char *attr, double x, double y, double t, mui_sampler_moving_average2d *spatial, mui_chrono_sampler_mean2d *temporal );
 
+/*  Connection between instances */
+/*  Announce Send */
+void mui_announce_send_span(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d);
+
+/*  Announce Receive */
+void mui_announce_recv_span(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d);
+
 /*  commit all data in buffer */
 void mui_commit( mui_uniface2d*, double t );
 
@@ -134,6 +147,18 @@ void mui_forget( mui_uniface2d*, double first, double last );
 
 /*  set automatic deletion */
 void mui_set_memory( mui_uniface2d*, double length );
+
+// send double
+void mui_send_double( mui_uniface2d* uniface, const char *attr, double value );
+
+// fetch double
+double mui_fetch_double( mui_uniface2d* uniface, const char *attr );
+
+// send int
+void mui_send_int( mui_uniface2d* uniface, const char *attr, int value );
+
+// fetch int
+int mui_fetch_int( mui_uniface2d* uniface, const char *attr); 
 
 /*  split comm */
 MPI_Comm mui_mpi_split_by_app(void);
