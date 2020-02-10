@@ -147,19 +147,17 @@ void mui_forget( mui_uniface3d*, double first, double last );
 /*  set automatic deletion */
 void mui_set_memory( mui_uniface3d*, double length );
 
-/*
-// assign double
-void mui_assign_double( mui_uniface3d* uniface, const char *attr, double value );
+// send double
+void mui_send_double( mui_uniface3d* uniface, const char *attr, double value );
 
-// fetch assigned
-double mui_fetch_assigned_double( mui_uniface3d* uniface, const char *attr );
+// fetch double
+double mui_fetch_double( mui_uniface3d* uniface, const char *attr );
 
-// fetch assigned int
-void mui_assign_int( mui_uniface3d* uniface, const char *attr, int value )
+// send int
+void mui_send_int( mui_uniface3d* uniface, const char *attr, int value );
 
-// fetch assigned int
-int mui_fetch_assigned_int( mui_uniface3d* uniface, const char *attr 
-*/
+// fetch int
+int mui_fetch_int( mui_uniface3d* uniface, const char *attr); 
 
 /*  split comm */
 MPI_Comm mui_mpi_split_by_app(void);

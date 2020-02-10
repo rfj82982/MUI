@@ -220,6 +220,26 @@ void mui_set_memory( mui_uniface1d* uniface, double length ) {
 	return uniface->set_memory( length );
 }
 
+// send a double
+void mui_send_double( mui_uniface1d* uniface, const char *attr, double value ) {
+        uniface->push( std::string(attr), value );
+}
+
+// fetch a double
+double mui_fetch_double( mui_uniface1d* uniface, const char *attr ) {
+        return uniface->fetch<double>( std::string(attr) );
+}
+
+// assign int
+void mui_send_int( mui_uniface1d* uniface, const char *attr, int value ) {
+        uniface->push( std::string(attr), value );
+}
+
+// fetch assigned
+int mui_fetch_int( mui_uniface1d* uniface, const char *attr ) {
+        return uniface->fetch<int>( std::string(attr) );
+}
+
 // split comm
 MPI_Comm mui_mpi_split_by_app() {
     return mpi_split_by_app();

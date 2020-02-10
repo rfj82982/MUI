@@ -148,6 +148,18 @@ void mui_forget( mui_uniface2d*, double first, double last );
 /*  set automatic deletion */
 void mui_set_memory( mui_uniface2d*, double length );
 
+// send double
+void mui_send_double( mui_uniface2d* uniface, const char *attr, double value );
+
+// fetch double
+double mui_fetch_double( mui_uniface2d* uniface, const char *attr );
+
+// send int
+void mui_send_int( mui_uniface2d* uniface, const char *attr, int value );
+
+// fetch int
+int mui_fetch_int( mui_uniface2d* uniface, const char *attr); 
+
 /*  split comm */
 MPI_Comm mui_mpi_split_by_app(void);
 

@@ -221,26 +221,25 @@ void mui_set_memory( mui_uniface3d* uniface, double length ) {
 	return uniface->set_memory( length );
 }
 
-/*
-// assign double
-void mui_assign_double( mui_uniface3d* uniface, const char *attr, double value ) {
-        uniface->assign( std::string(attr), value );
+// send a double
+void mui_send_double( mui_uniface3d* uniface, const char *attr, double value ) {
+        uniface->push( std::string(attr), value );
 }
 
-// fetch assigned dluble
-double mui_fetch_assigned_double( mui_uniface3d* uniface, const char *attr ) {
+// fetch a double
+double mui_fetch_double( mui_uniface3d* uniface, const char *attr ) {
         return uniface->fetch<double>( std::string(attr) );
 }
 
 // assign int
-void mui_assign_int( mui_uniface3d* uniface, const char *attr, int value ) {
-        uniface->assign( std::string(attr), value );
+void mui_send_int( mui_uniface3d* uniface, const char *attr, int value ) {
+        uniface->push( std::string(attr), value );
 }
 
 // fetch assigned
-int mui_fetch_assigned_int( mui_uniface3d* uniface, const char *attr ) {
+int mui_fetch_int( mui_uniface3d* uniface, const char *attr ) {
         return uniface->fetch<int>( std::string(attr) );
-}*/
+}
 
 // split comm
 MPI_Comm mui_mpi_split_by_app() {
