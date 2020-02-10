@@ -154,7 +154,7 @@ private:
 			bool prefetched = false;
 
 			for( auto itr = spans.begin(); itr != end; ++itr ) {
-			    if( almost_equal(t, itr->first.second) || t < itr->first.second ) {
+			    if( (t < itr->first.second) || almost_equal(t, itr->first.second) ) {
 					prefetched = true;
 					if( collide(s,itr->second) )  return true;
 				}
@@ -393,7 +393,7 @@ public:
 	int commit( time_type timestamp ) {
 	    std::vector<bool> is_sending(comm->remote_size(), true);
 
-	    if( ((almost_equal(span_start, timestamp) || span_start < timestamp) && (almost_equal(timestamp, span_timeout) || timestamp < span_timeout)) ) {
+	    if( (((span_start < timestamp) || almost_equal(span_start, timestamp)) && ((timestamp < span_timeout) || almost_equal(timestamp, span_timeout))) ) {
 			for( std::size_t i=0; i<peers.size(); ++i ) {
 				is_sending[i] = peers[i].is_recving( timestamp, current_span );
 			}
@@ -422,24 +422,24 @@ public:
 	}
 
 	bool is_ready( const std::string& attr, time_type t ) const {
-	        using logitem_ref_t = typename decltype(log)::const_reference;
-	            return  std::any_of(log.begin(), log.end(), [=](logitem_ref_t time_frame) {
-	                    return time_frame.second.find(attr) != time_frame.second.end(); }) // return false for nonexisting attributes.
-	                && std::all_of(peers.begin(), peers.end(), [=](const peer_state& p) {
-	                    return (!p.is_sending(t,recv_span)) || ((almost_equal(p.current_t(), t) || p.current_t() > t) || p.next_t() > t); });
-    }
+		using logitem_ref_t = typename decltype(log)::const_reference;
+		return std::any_of(log.begin(), log.end(), [=](logitem_ref_t time_frame) {
+			return time_frame.second.find(attr) != time_frame.second.end(); }) // return false for nonexisting attributes.
+			&& std::all_of(peers.begin(), peers.end(), [=](const peer_state& p) {
+			return (!p.is_sending(t,recv_span)) || (((p.current_t() > t) || almost_equal(p.current_t(), t)) || (p.next_t() > t)); });
+	}
 
 	void barrier( time_type t ) {
-	    auto start = std::chrono::system_clock::now();
-        for(;;) {    // barrier must be thread-safe because it is called in fetch()
-            std::lock_guard<std::mutex> lock(mutex);
-            if( std::all_of(peers.begin(), peers.end(), [=](const peer_state& p) {
-                return (!p.is_sending(t,recv_span)) || ((almost_equal(p.current_t(), t) || p.current_t() > t) || p.next_t() > t); }) ) break;
-            acquire(); // To avoid infinite-loop when synchronous communication
-        }
-        if( (std::chrono::system_clock::now() - start) > std::chrono::seconds(5) )
-            std::cerr << "MUI Warning [uniface.h]: Communication spends over 5 seconds" << std::endl;
-    }
+		auto start = std::chrono::system_clock::now();
+		for(;;) {    // barrier must be thread-safe because it is called in fetch()
+			std::lock_guard<std::mutex> lock(mutex);
+			if( std::all_of(peers.begin(), peers.end(), [=](const peer_state& p) {
+				return (!p.is_sending(t,recv_span)) || (((p.current_t() > t) || almost_equal(p.current_t(), t)) || (p.next_t() > t)); }) ) break;
+			acquire(); // To avoid infinite-loop when synchronous communication
+		}
+		if( (std::chrono::system_clock::now() - start) > std::chrono::seconds(5) )
+			std::cerr << "MUI Warning [uniface.h]: Communication spends over 5 seconds" << std::endl;
+	}
 
 	void announce_send_span( time_type start, time_type timeout, span_t s ){
 		// say remote nodes that "I'll send this span."
@@ -461,7 +461,7 @@ public:
 	void forget( time_type end, bool reset_log = false ) {
 		log.erase(log.begin(), log.upper_bound(end+threshold(end)));
 		if(reset_log) {
-			time_type curr_time = 0;
+			time_type curr_time = std::numeric_limits<time_type>::lowest();
 			if(!log.empty()) curr_time = log.rbegin()->first;
 			for(size_t i=0; i<peers.size(); i++) {
 				peers.at(i).set_current_t(curr_time);
@@ -472,7 +472,7 @@ public:
 	void forget( time_type first, time_type last, bool reset_log = false ) {
 		log.erase(log.lower_bound(first-threshold(first)), log.upper_bound(last+threshold(last)));
 		if(reset_log) {
-			time_type curr_time = 0;
+			time_type curr_time = std::numeric_limits<time_type>::lowest();
 			if(!log.empty()) curr_time = log.rbegin()->first;
 			for(size_t i=0; i<peers.size(); i++) {
 				peers.at(i).set_current_t(curr_time);
@@ -494,35 +494,23 @@ private:
 	void on_recv_confirm( int32_t sender, time_type timestamp ) {
 		peers.at(sender).set_current_t(timestamp);
 	}
+
 	void on_recv_forecast( int32_t sender, time_type timestamp ) {
 		peers.at(sender).set_next_t(timestamp);
 	}
 
 	void on_recv_data( time_type timestamp, frame_type frame ) {
 		// when message.id_ == "data"
-	    auto first=log.lower_bound(timestamp-threshold(timestamp));
-	    auto last=log.upper_bound(timestamp+threshold(timestamp));
+		auto itr = log.find(timestamp);
 
-		if( first == last ) {
-          if( last == log.end() ) std::tie(last,std::ignore) = log.insert(std::make_pair(timestamp,bin_frame_type()));
-          auto& cur = last->second;
-          for( auto& p: frame ){
-              auto pstr = cur.find(p.first);
-              if( pstr == cur.end() ) cur.insert(std::make_pair(std::move(p.first),spatial_t(std::move(p.second))));
-              else pstr->second.insert(p.second);
-          }
-          log.erase(log.begin(), log.upper_bound(timestamp-memory_length));
+		if( itr == log.end() ) std::tie(itr,std::ignore) = log.insert(std::make_pair(timestamp,bin_frame_type()));
+		auto& cur = itr->second;
+		for( auto& p: frame ){
+			auto pstr = cur.find(p.first);
+			if( pstr == cur.end() ) cur.insert(std::make_pair(std::move(p.first),spatial_t(std::move(p.second))));
+			else pstr->second.insert(p.second);
 		}
-		else {
-			size_t count=0;
-
-			for( ; first != last; first++ ) {
-				count++;
-			}
-
-			if( count > 1 )
-				std::cerr << "MUI Warning [uniface.h]: More than 1 time frame of data found in log for time=" << timestamp << std::endl;
-		}
+		log.erase(log.begin(), log.upper_bound(timestamp-memory_length));
 	}
 
 	void on_recv_rawdata( int32_t sender, time_type timestamp, frame_raw_type frame ) {
