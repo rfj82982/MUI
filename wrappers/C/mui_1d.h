@@ -61,7 +61,7 @@ typedef struct mui_sampler_nearest1d                  mui_sampler_nearest1d;
 typedef struct mui_sampler_pseudo_nearest_neighbor1d  mui_sampler_pseudo_nearest_neighbor1d;
 typedef struct mui_sampler_pseudo_nearest2_linear1d   mui_sampler_pseudo_nearest2_linear1d;
 typedef struct mui_geometry_box1d                     mui_geometry_box1d;
-
+typedef struct mui_geometry_sphere1d                  mui_geometry_sphere1d;
 
 /* allocator */
 mui_uniface1d* mui_create_uniface1d( const char *URI );
@@ -76,6 +76,7 @@ mui_chrono_sampler_exact1d* mui_create_chrono_sampler_exact1d();
 mui_chrono_sampler_mean1d* mui_create_chrono_sampler_mean1d( double past, double future );
 
 mui_geometry_box1d* mui_create_geometry_box1d(double l1_x, double l2_x);
+mui_geometry_sphere1d* mui_create_geometry_sphere1d(double l1_x, double rr );
 
 /* deallocator */
 void mui_destroy_uniface1d( mui_uniface1d *uniface );
@@ -90,6 +91,7 @@ void mui_destroy_chrono_sampler_exact1d( mui_chrono_sampler_exact1d* sampler );
 void mui_destroy_chrono_sampler_mean1d( mui_chrono_sampler_mean1d* sampler );
 
 void mui_destroy_geometry_box1d( mui_geometry_box1d* box1d);
+void mui_destroy_geometry_sphere1d( mui_geometry_sphere1d* sphere1d);
 
 /* push */
 void mui_push( mui_uniface1d* uniface, const char *attr, double x, double t );
@@ -129,15 +131,24 @@ double mui_fetch_moving_average_exact( mui_uniface1d* uniface, const char *attr,
 /*  temporal sampler: mean */
 double mui_fetch_moving_average_mean( mui_uniface1d* uniface, const char *attr, double x, double t, mui_sampler_moving_average1d *spatial, mui_chrono_sampler_mean1d *temporal );
 
-/*  Connection between instances */
-/*  Announce Send */
-void mui_announce_send_span(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_box1d *box1d);
+/*  Connection between instances using different geomtries */
+/*  Announce Send Box */
+void mui_announce_send_span_box(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_box1d *box1d);
 
-/*  Announce Receive */
-void mui_announce_recv_span(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_box1d *box1d);
+/*  Announce Receive Box */
+void mui_announce_recv_span_box(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_box1d *box1d);
+
+/*  Announce Send Sphere */
+void mui_announce_send_span_sphere(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_sphere1d *sphere1d);
+
+/*  Announce Receive Sphere*/
+void mui_announce_recv_span_sphere(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_sphere1d *sphere1d);
 
 /*  commit all data in buffer */
 void mui_commit( mui_uniface1d*, double t );
+
+/*  commit all data in buffer and return the number of rank in the communication */
+int mui_commit_ranks( mui_uniface1d*, double t );
 
 /*  wait for peers */
 void mui_barrier( mui_uniface1d*, double t );
@@ -159,6 +170,7 @@ void mui_send_int( mui_uniface1d* uniface, const char *attr, int value );
 
 // fetch int
 int mui_fetch_int( mui_uniface1d* uniface, const char *attr); 
+
 /*  split comm */
 MPI_Comm mui_mpi_split_by_app(void);
 

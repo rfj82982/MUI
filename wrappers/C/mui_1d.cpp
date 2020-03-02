@@ -62,6 +62,7 @@ typedef sampler_nearest_neighbor1d<double> mui_sampler_nearest1d;
 typedef sampler_pseudo_nearest_neighbor1d<double> mui_sampler_pseudo_nearest_neighbor1d;
 typedef sampler_pseudo_nearest2_linear1d<double> mui_sampler_pseudo_nearest2_linear1d;
 typedef geometry::box1d mui_geometry_box1d;
+typedef geometry::sphere1d mui_geometry_sphere1d;
 
 // allocator
 mui_uniface1d* mui_create_uniface1d( const char *URI ) {
@@ -104,6 +105,10 @@ mui_geometry_box1d* mui_create_geometry_box1d(double l1_x, double l2_x){
 	return new mui_geometry_box1d(point1d(l1_x),point1d(l2_x));
 }
 
+mui_geometry_sphere1d* mui_create_geometry_sphere1d(double l1_x, double rr){
+	return new mui_geometry_sphere1d(point1d(l1_x),rr);
+}
+
 // deallocator
 void mui_destroy_uniface1d( mui_uniface1d *uniface ) {
 	delete uniface;
@@ -138,6 +143,10 @@ void mui_destroy_chrono_sampler_mean1d( mui_chrono_sampler_mean1d* sampler ) {
 
 void mui_destroy_geometry_box1d( mui_geometry_box1d* box1d){
 	delete box1d;
+}
+
+void mui_destroy_geometry_sphere1d( mui_geometry_sphere1d* sphere1d){
+	delete sphere1d;
 }
 
 // push
@@ -192,17 +201,31 @@ double mui_fetch_moving_average_mean( mui_uniface1d* uniface, const char *attr, 
 	return uniface->fetch( std::string(attr), point1d(x), t, *spatial, *temporal );
 }
 
-void mui_announce_send_span(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_box1d *box1d){
+// announce send/receive using different geometries
+void mui_announce_send_span_box(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_box1d *box1d){
 	uniface->announce_send_span( t0, tfin , *box1d );
 }
 
-void mui_announce_recv_span(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_box1d *box1d){
+void mui_announce_recv_span_box(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_box1d *box1d){
 	uniface->announce_recv_span( t0, tfin , *box1d );
+}
+
+void mui_announce_send_span_sphere(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_sphere1d *sphere1d){
+	uniface->announce_send_span( t0, tfin , *sphere1d );
+}
+
+void mui_announce_recv_span_sphere(mui_uniface1d* uniface, double t0, double tfin, mui_geometry_sphere1d *sphere1d){
+	uniface->announce_recv_span( t0, tfin , *sphere1d );
 }
 
 // commit all data in buffer
 void mui_commit( mui_uniface1d* uniface, double t ) {
 	uniface->commit( t );
+}
+
+// commit all data in buffer and return number of communication
+int mui_commit_ranks( mui_uniface1d* uniface, double t ) {
+	return uniface->commit( t );
 }
 
 // wait for peers
