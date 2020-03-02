@@ -62,6 +62,7 @@ typedef sampler_nearest_neighbor2d<double> mui_sampler_nearest2d;
 typedef sampler_pseudo_nearest_neighbor2d<double> mui_sampler_pseudo_nearest_neighbor2d;
 typedef sampler_pseudo_nearest2_linear2d<double> mui_sampler_pseudo_nearest2_linear2d;
 typedef geometry::box2d mui_geometry_box2d;
+typedef geometry::sphere2d mui_geometry_sphere2d;
 
 // allocator
 mui_uniface2d* mui_create_uniface2d( const char *URI ) {
@@ -104,6 +105,10 @@ mui_geometry_box2d* mui_create_geometry_box2d(double l1_x, double l1_y, double l
 	return new mui_geometry_box2d(point2d(l1_x,l1_y),point2d(l2_x,l2_y));
 }
 
+mui_geometry_sphere2d* mui_create_geometry_sphere2d(double l1_x, double l1_y, double rr){
+	return new mui_geometry_sphere2d(point2d(l1_x,l1_y),rr);
+}
+
 // deallocator
 void mui_destroy_uniface2d( mui_uniface2d *uniface ) {
 	delete uniface;
@@ -140,6 +145,9 @@ void mui_destroy_geometry_box2d( mui_geometry_box2d* box2d){
 	delete box2d;
 }
 
+void mui_destroy_geometry_sphere2d( mui_geometry_sphere2d* sphere2d){
+	delete sphere2d;
+}
 
 // push
 void mui_push( mui_uniface2d* uniface, const char *attr, double x, double y , double value ) {
@@ -193,17 +201,31 @@ double mui_fetch_moving_average_mean( mui_uniface2d* uniface, const char *attr, 
 	return uniface->fetch( std::string(attr), point2d(x,y), t, *spatial, *temporal );
 }
 
-void mui_announce_send_span(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d){
+// announce send/receive using different geometries
+void mui_announce_send_span_box(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d){
 	uniface->announce_send_span( t0, tfin , *box2d );
 }
 
-void mui_announce_recv_span(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d){
+void mui_announce_recv_span_box(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d){
 	uniface->announce_recv_span( t0, tfin , *box2d );
+}
+
+void mui_announce_send_span_sphere(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_sphere2d *sphere2d){
+	uniface->announce_send_span( t0, tfin , *sphere2d );
+}
+
+void mui_announce_recv_span_sphere(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_sphere2d *sphere2d){
+	uniface->announce_recv_span( t0, tfin , *sphere2d );
 }
 
 // commit all data in buffer
 void mui_commit( mui_uniface2d* uniface, double t ) {
 	uniface->commit( t );
+}
+
+// commit all data in buffer and return number of communication
+int mui_commit_ranks( mui_uniface2d* uniface, double t ) {
+	return uniface->commit( t );
 }
 
 // wait for peers
