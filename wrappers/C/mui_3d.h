@@ -67,12 +67,12 @@ typedef struct mui_geometry_sphere3d                  mui_geometry_sphere3d;
 mui_uniface3d* mui_create_uniface3d( const char *URI );
 mui_sampler_gauss3d* mui_create_sampler_3d( double r, double h );
 mui_sampler_moving_average3d* mui_create_sampler_moving_average3d( double dx, double dy, double dz );
-mui_sampler_exact3d* mui_create_sampler_exact3d();
-mui_sampler_nearest3d* mui_create_sampler_nearest3d();
-mui_sampler_pseudo_nearest_neighbor3d* mui_create_sampler_pseudo_nearest_neighbor3d();
-mui_sampler_pseudo_nearest2_linear3d* mui_create_sampler_pseudo_nearest2_linear3d();
+mui_sampler_exact3d* mui_create_sampler_exact3d(void);
+mui_sampler_nearest3d* mui_create_sampler_nearest3d(void);
+mui_sampler_pseudo_nearest_neighbor3d* mui_create_sampler_pseudo_nearest_neighbor3d(double h);
+mui_sampler_pseudo_nearest2_linear3d* mui_create_sampler_pseudo_nearest2_linear3d(double h);
 
-mui_chrono_sampler_exact3d* mui_create_chrono_sampler_exact3d();
+mui_chrono_sampler_exact3d* mui_create_chrono_sampler_exact3d(void);
 mui_chrono_sampler_mean3d* mui_create_chrono_sampler_mean3d( double past, double future );
 
 mui_geometry_box3d* mui_create_geometry_box3d(double l1_x, double l1_y, double l1_z, double l2_x, double l2_y, double l2_z);
