@@ -68,12 +68,12 @@ typedef struct mui_geometry_sphere2d                  mui_geometry_sphere2d;
 mui_uniface2d* mui_create_uniface2d( const char *URI );
 mui_sampler_gauss2d* mui_create_sampler_2d( double r, double h );
 mui_sampler_moving_average2d* mui_create_sampler_moving_average2d( double dx, double dy );
-mui_sampler_exact2d* mui_create_sampler_exact2d();
-mui_sampler_nearest2d* mui_create_sampler_nearest2d();
-mui_sampler_pseudo_nearest_neighbor2d* mui_create_sampler_pseudo_nearest_neighbor2d();
-mui_sampler_pseudo_nearest2_linear2d* mui_create_sampler_pseudo_nearest2_linear2d();
+mui_sampler_exact2d* mui_create_sampler_exact2d(void);
+mui_sampler_nearest2d* mui_create_sampler_nearest2d(void);
+mui_sampler_pseudo_nearest_neighbor2d* mui_create_sampler_pseudo_nearest_neighbor2d(double h);
+mui_sampler_pseudo_nearest2_linear2d* mui_create_sampler_pseudo_nearest2_linear2d(double h);
 
-mui_chrono_sampler_exact2d* mui_create_chrono_sampler_exact2d();
+mui_chrono_sampler_exact2d* mui_create_chrono_sampler_exact2d(void);
 mui_chrono_sampler_mean2d* mui_create_chrono_sampler_mean2d( double past, double future );
 
 mui_geometry_box2d* mui_create_geometry_box2d(double l1_x, double l1_y, double l2_x, double l2_y);
@@ -143,7 +143,7 @@ void mui_announce_recv_span_box(mui_uniface2d* uniface, double t0, double tfin, 
 void mui_announce_send_span_sphere(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_sphere2d *sphere2d);
 
 /*  Announce Receive */
-void mui_announce_recv_span_sphere(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_box2d *box2d);
+void mui_announce_recv_span_sphere(mui_uniface2d* uniface, double t0, double tfin, mui_geometry_sphere2d *sphere2d);
 
 /*  commit all data in buffer */
 void mui_commit( mui_uniface2d*, double t );

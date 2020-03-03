@@ -77,11 +77,11 @@ mui_sampler_moving_average2d* mui_create_sampler_moving_average2d( double dx, do
 	return new mui_sampler_moving_average2d( point2d(dx,dy) );
 }
 
-mui_sampler_exact2d* mui_create_sampler_exact2d() {
+mui_sampler_exact2d* mui_create_sampler_exact2d(void) {
     return new mui_sampler_exact2d();
 }
 
-mui_sampler_nearest2d* mui_create_sampler_nearest2d() {
+mui_sampler_nearest2d* mui_create_sampler_nearest2d(void) {
     return new mui_sampler_nearest2d();
 }
 
@@ -93,7 +93,7 @@ mui_sampler_pseudo_nearest2_linear2d* mui_create_sampler_pseudo_nearest2_linear2
     return new mui_sampler_pseudo_nearest2_linear2d( h );
 }
 
-mui_chrono_sampler_exact2d* mui_create_chrono_sampler_exact2d() {
+mui_chrono_sampler_exact2d* mui_create_chrono_sampler_exact2d(void) {
 	return new mui_chrono_sampler_exact2d;
 }
 
@@ -264,7 +264,7 @@ int mui_fetch_int( mui_uniface2d* uniface, const char *attr ) {
 }
 
 // split comm
-MPI_Comm mui_mpi_split_by_app() {
+MPI_Comm mui_mpi_split_by_app(void) {
     return mpi_split_by_app();
 }
 

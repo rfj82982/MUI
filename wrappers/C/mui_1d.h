@@ -67,12 +67,12 @@ typedef struct mui_geometry_sphere1d                  mui_geometry_sphere1d;
 mui_uniface1d* mui_create_uniface1d( const char *URI );
 mui_sampler_gauss1d* mui_create_sampler_1d( double r, double h );
 mui_sampler_moving_average1d* mui_create_sampler_moving_average1d( double dx );
-mui_sampler_exact1d* mui_create_sampler_exact1d();
-mui_sampler_nearest1d* mui_create_sampler_nearest1d();
-mui_sampler_pseudo_nearest_neighbor1d* mui_create_sampler_pseudo_nearest_neighbor1d();
-mui_sampler_pseudo_nearest2_linear1d* mui_create_sampler_pseudo_nearest2_linear1d();
+mui_sampler_exact1d* mui_create_sampler_exact1d(void);
+mui_sampler_nearest1d* mui_create_sampler_nearest1d(void);
+mui_sampler_pseudo_nearest_neighbor1d* mui_create_sampler_pseudo_nearest_neighbor1d(double h);
+mui_sampler_pseudo_nearest2_linear1d* mui_create_sampler_pseudo_nearest2_linear1d(double h);
 
-mui_chrono_sampler_exact1d* mui_create_chrono_sampler_exact1d();
+mui_chrono_sampler_exact1d* mui_create_chrono_sampler_exact1d(void);
 mui_chrono_sampler_mean1d* mui_create_chrono_sampler_mean1d( double past, double future );
 
 mui_geometry_box1d* mui_create_geometry_box1d(double l1_x, double l2_x);

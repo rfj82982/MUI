@@ -77,11 +77,11 @@ mui_sampler_moving_average1d* mui_create_sampler_moving_average1d( double dx ) {
 	return new mui_sampler_moving_average1d( point1d(dx) );
 }
 
-mui_sampler_exact1d* mui_create_sampler_exact1d() {
+mui_sampler_exact1d* mui_create_sampler_exact1d(void) {
     return new mui_sampler_exact1d();
 }
 
-mui_sampler_nearest1d* mui_create_sampler_nearest1d() {
+mui_sampler_nearest1d* mui_create_sampler_nearest1d(void) {
     return new mui_sampler_nearest1d();
 }
 
@@ -93,7 +93,7 @@ mui_sampler_pseudo_nearest2_linear1d* mui_create_sampler_pseudo_nearest2_linear1
     return new mui_sampler_pseudo_nearest2_linear1d( h );
 }
 
-mui_chrono_sampler_exact1d* mui_create_chrono_sampler_exact1d() {
+mui_chrono_sampler_exact1d* mui_create_chrono_sampler_exact1d(void) {
 	return new mui_chrono_sampler_exact1d;
 }
 
@@ -264,7 +264,7 @@ int mui_fetch_int( mui_uniface1d* uniface, const char *attr ) {
 }
 
 // split comm
-MPI_Comm mui_mpi_split_by_app() {
+MPI_Comm mui_mpi_split_by_app(void) {
     return mpi_split_by_app();
 }
 
