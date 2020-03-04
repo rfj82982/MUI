@@ -72,12 +72,12 @@ public:
 	    size_t n(0);
 		OTYPE vsum(0);
 		for( size_t i = 0 ; i < data_points.size() ; i++ ) {
-            point_type dx(REAL(0.0));
-            for (INT j = 0 ; j < CONFIG::D ; j++) {
-                dx[j] = std::fabs(data_points[i].first[j] - focus[j]);
-            }
+            		point_type dx(REAL(0.0));
+            		for (INT j = 0 ; j < CONFIG::D ; j++) {
+            		    dx[j] = std::fabs(data_points[i].first[j] - focus[j]);
+            		}
 			bool within = true;
-			for( INT i = 0 ; within && i < CONFIG::D ; i++ ) within = within && ( dx[i] < bbox[i] );
+			for( INT k = 0 ; within && k < CONFIG::D ; k++ ) within = within && ( dx[k] < bbox[k] );
 			if ( within ) {
 				vsum += data_points[i].second;
 				n++;
